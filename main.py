@@ -64,5 +64,19 @@ class Bot(commands.AutoShardedBot):
         print('------')
         print('Initialization Complete')
 
-bot = Bot(command_prefix="!")
+bot = Bot(command_prefix="/")
 bot.remove_command('help')
+slash = SlashCommand(bot, sync_commands=True)
+
+@slash.slash(name="embeds")
+async def embeds(ctx: SlashContext):
+    one = discord.Embed(title="1st Embed", description="General Kenobi!", color=discord.Color.red())
+    two = discord.Embed(title="2nd Embed", description="General Kenobi!", color=discord.Color.orange())
+    three = discord.Embed(title="3rd Embed", description="General Kenobi!", color=discord.Color.gold())
+    four = discord.Embed(title="4th Embed", description="General Kenobi!", color=discord.Color.green())
+    five = discord.Embed(title="5th Embed", description="General Kenobi!", color=discord.Color.blue())
+    pages = [one, two, three, four, five]
+
+    await Paginator(bot=bot, ctx=ctx, pages=pages, content=["1", "2", "3", "4", "5"], timeout=60).run()
+
+bot.run(token)
