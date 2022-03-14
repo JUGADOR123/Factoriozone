@@ -1,8 +1,8 @@
-import asyncio
-import logging
-import time
+import asyncio, logging, time, discord, coloredlogs
+from discord.ext import commands
+from discord_slash import SlashCommand, SlashContext
+from dinteractions_Paginator import Paginator
 
-import coloredlogs
 import src.websocket as ws
 
 if __name__ == "__main__":
