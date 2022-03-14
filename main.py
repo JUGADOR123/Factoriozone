@@ -44,7 +44,7 @@ class Bot(commands.AutoShardedBot):
             if not file.startswith('__'):
                 name = file.replace('.py','')
                 self.load_extension(direc + name)"""
-        for x in os.walk('modules/commands', topdown=False):
+        """for x in os.walk('modules/commands', topdown=False):
             # Load command cogs
             for y in x[1]:
                 if not y.startswith('__'):
@@ -52,7 +52,7 @@ class Bot(commands.AutoShardedBot):
                     for file in os.listdir('modules/commands/{}'.format(y)):
                         if not file.startswith('__'):
                             name = file.replace('.py','')
-                            self.load_extension(direc + name)
+                            self.load_extension(direc + name)"""
         print('Logged in as')
         print(self.user.name)
         print(self.user.id)
