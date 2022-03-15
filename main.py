@@ -55,7 +55,7 @@ bot = Bot(command_prefix="/")
 bot.remove_command('help')
 slash = SlashCommand(bot, sync_commands=True)
 
-@slash.slash(name="help", guild_ids=[926227211659386981])
+@slash.slash(name="help", description="Gets the commands for the bot", guild_ids=[926227211659386981])
 async def help(ctx: SlashContext):
     login = discord.Embed(title="/login", description="This makes the bot login to factorio.zone", color=discord.Color.red())
     start = discord.Embed(title="/start", description="This allows you to start your server", color=discord.Color.orange())
