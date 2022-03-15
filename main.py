@@ -7,37 +7,24 @@ import src.websocket as ws
 
 settings = json.load(open('settings.json'))
 token = settings['token']
+logger = logging.getLogger()
+coloredlogs.install(level='DEBUG', logger=logger, fmt=f"[%(module)-1s]|[%(levelname)-1s]| %(message)s", )
 
-if __name__ == "__main__":
-    logger = logging.getLogger()
-    coloredlogs.install(level='DEBUG', logger=logger, fmt=f"[%(module)-1s]|[%(levelname)-1s]| %(message)s", )
+
+"""if __name__ == "__main__":
     logger.info("Starting Client")
     loop= asyncio.get_event_loop()
     loop.run_until_complete(ws.receive("factorio.zone/ws"))
-    loop.run_forever()
+    loop.run_forever()"""
 
 class Bot(commands.AutoShardedBot):
     """Subclassing Bot because we do some different things here"""
-    @property
-    def utils(self):
-        """Define the default utilities"""
-        return utils
-
-    @property
-    def web(self):
-        """Makes aiohttp a global session"""
-        return utils.WebHelper.session
-
-    @property
-    def db(self):
-        """Makes Redis a global session"""
-        return utils.DatabaseHandler.db
 
     async def on_ready(self):
         # Remove help because it's done with commands
         
         # Set status
-        await self.change_presence(activity=nextcord.Game(name="API for factorio.zone"))
+        await self.change_presence(activity=discord.Game(name="API for factorio.zone"))
         """for file in os.listdir('modules/events'):
             # Load invisible cogs
             direc = 'modules.events.'
@@ -68,15 +55,15 @@ bot = Bot(command_prefix="/")
 bot.remove_command('help')
 slash = SlashCommand(bot, sync_commands=True)
 
-@slash.slash(name="embeds")
-async def embeds(ctx: SlashContext):
-    one = discord.Embed(title="1st Embed", description="General Kenobi!", color=discord.Color.red())
-    two = discord.Embed(title="2nd Embed", description="General Kenobi!", color=discord.Color.orange())
-    three = discord.Embed(title="3rd Embed", description="General Kenobi!", color=discord.Color.gold())
+@slash.slash(name="help", guild_ids=[926227211659386981])
+async def help(ctx: SlashContext):
+    login = discord.Embed(title="/login", description="This makes the bot login to factorio.zone", color=discord.Color.red())
+    start = discord.Embed(title="/start", description="This allows you to start your server", color=discord.Color.orange())
+    stop = discord.Embed(title="/stop", description="This allows you to stop your server", color=discord.Color.gold())
     four = discord.Embed(title="4th Embed", description="General Kenobi!", color=discord.Color.green())
     five = discord.Embed(title="5th Embed", description="General Kenobi!", color=discord.Color.blue())
-    pages = [one, two, three, four, five]
+    pages = [login, start, stop, four, five]
 
-    await Paginator(bot=bot, ctx=ctx, pages=pages, content=["1", "2", "3", "4", "5"], timeout=60).run()
+    await Paginator(bot=bot, ctx=ctx, pages=pages, content=["/login", "/start", "/stop", "4", "5"], timeout=60).run()
 
 bot.run(token)
