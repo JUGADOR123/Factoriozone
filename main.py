@@ -1,7 +1,5 @@
-import asyncio, logging, time, discord, coloredlogs, json
+import asyncio, logging, time, discord, coloredlogs, json, interactions
 from discord.ext import commands
-from discord_slash import SlashCommand, SlashContext
-from discord_slash.utils.manage_commands import create_choice, create_option
 from dinteractions_Paginator import Paginator
 
 import src.websocket as ws
@@ -54,7 +52,7 @@ class Bot(commands.AutoShardedBot):
 
 bot = Bot(command_prefix="/")
 bot.remove_command('help')
-slash = SlashCommand(bot, sync_commands=True)
+slash = interactions.SlashCommand(bot, sync_commands=True)
 
 @slash.slash(
     name="help",
