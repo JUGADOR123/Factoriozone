@@ -1,8 +1,6 @@
-import asyncio, logging, time, discord, coloredlogs, json
+import asyncio, logging, time, coloredlogs, json, discord
 from discord.ext import commands
-from discord_slash import SlashCommand, SlashContext
-from discord_slash.utils.manage_commands import create_choice, create_option
-from dinteractions_Paginator import Paginator
+import interactions
 
 import src.websocket as ws
 
@@ -18,7 +16,7 @@ coloredlogs.install(level='DEBUG', logger=logger, fmt=f"[%(module)-1s]|[%(leveln
     loop.run_until_complete(ws.receive("factorio.zone/ws"))
     loop.run_forever()"""
 
-class Bot(commands.AutoShardedBot):
+class Bot(discord.AutoShardedBot):
     """Subclassing Bot because we do some different things here"""
 
     async def on_ready(self):
@@ -54,7 +52,7 @@ class Bot(commands.AutoShardedBot):
 
 bot = Bot(command_prefix="/")
 bot.remove_command('help')
-slash = SlashCommand(bot, sync_commands=True)
+slash = interactions.SlashCommand(bot, sync_commands=True)
 
 @slash.slash(
     name="help",
