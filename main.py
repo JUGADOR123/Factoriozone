@@ -56,7 +56,11 @@ bot = Bot(command_prefix="/")
 bot.remove_command('help')
 slash = SlashCommand(bot, sync_commands=True)
 
-@slash.slash(name="help", description="Gets the commands for the bot", guild_ids=[926227211659386981])
+@slash.slash(
+    name="help",
+    description="Gets the commands for the bot",
+    guild_ids=[926227211659386981]
+)
 async def help(ctx: SlashContext):
     login = discord.Embed(title="/login", description="This makes the bot login to factorio.zone", color=discord.Color.red())
     start = discord.Embed(title="/start", description="This allows you to start your server", color=discord.Color.orange())
@@ -66,5 +70,33 @@ async def help(ctx: SlashContext):
     pages = [login, start, stop, four, five]
 
     await Paginator(bot=bot, ctx=ctx, pages=pages, timeout=60).run()
+
+@slash.slash(
+    name="settings",
+    description="Sets some settingsfor your server",
+    guild_ids=[926227211659386981],
+    options=[
+        create_option(
+            name="add",
+            description="Sets some settings to your server",
+            type=2,
+            options=[
+                create_option(
+                    name="usertoken",
+                    description="Sets your server's factoeio.zone user token",
+                    type=2,
+                    options=[
+                        create_option(
+                            name="usertoken",
+                            description="Put your user token from factorio.zone here",
+                            required=True,
+                            option_type=3
+                        )
+                    ]
+                )
+            ]
+        )
+    ]
+)
 
 bot.run(token)
