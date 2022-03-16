@@ -87,7 +87,7 @@ async def help(ctx: SlashContext):
                         required=True,
                         option_type=3
                 )
-            ]
+            ],
         )
     ]
 )
