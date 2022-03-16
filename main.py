@@ -73,7 +73,7 @@ async def help(ctx: SlashContext):
 
 @slash.slash(
     name="settings",
-    description="Sets some settingsfor your server",
+    description="Sets some settings for your server",
     guild_ids=[926227211659386981],
     options=[
         create_option(
