@@ -79,7 +79,7 @@ async def help(ctx: SlashContext):
         create_option(
             name="add",
             description="Sets some settings to your server",
-            option_type=2,
+            type=2,
             options=[
                 create_option(
                     name="usertoken",
