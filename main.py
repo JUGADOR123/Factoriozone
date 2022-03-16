@@ -98,5 +98,6 @@ async def help(ctx: SlashContext):
         )
     ]
 )
+#async def settings() Unfinished
 
 bot.run(token)
