@@ -64,6 +64,6 @@ async def help(ctx: SlashContext):
     five = discord.Embed(title="5th Embed", description="General Kenobi!", color=discord.Color.blue())
     pages = [login, start, stop, four, five]
 
-    await Paginator(bot=bot, ctx=ctx, pages=pages, content=["/login", "/start", "/stop", "4", "5"], timeout=60).run()
+    await Paginator(bot=bot, ctx=ctx, pages=pages, timeout=60).run()
 
 bot.run(token)
