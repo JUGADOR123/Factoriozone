@@ -52,9 +52,9 @@ class Bot(commands.AutoShardedBot):
 
 bot = Bot(command_prefix="/")
 bot.remove_command('help')
-slash = interactions.SlashCommand(bot, sync_commands=True)
+slash = interactions.Client(token=token)
 
-@slash.slash(
+@slash.command(
     name="help",
     description="Gets the commands for the bot",
     guild_ids=[926227211659386981]
@@ -69,20 +69,20 @@ async def help(ctx: SlashContext):
 
     await Paginator(bot=bot, ctx=ctx, pages=pages, timeout=60).run()
 
-@slash.slash(
+@slash.command(
     name="setusertoken",
     description="Sets the user token for your server",
     guild_ids=[926227211659386981],
     options=[
-        create_option(
+        interactions.Option(
             name="usertoken",
             description="Put your user token from factorio.zone here",
         required=True,
-        option_type=3
+        option_type=interactions.OptionType.STRING
         )
     ]
 )
-async def settings(ctx:SlashContext, usertoken:str):
+async def settings(ctx:interactions.CommandContext, usertoken:str):
     await ctx.send(usertoken)
 
 bot.run(token)
