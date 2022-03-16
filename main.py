@@ -81,8 +81,6 @@ async def help(ctx: SlashContext):
             description="Put your user token from factorio.zone here",
         required=True,
         option_type=3
-                )
-            ],
         )
     ]
 )
