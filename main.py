@@ -16,7 +16,7 @@ coloredlogs.install(level='DEBUG', logger=logger, fmt=f"[%(module)-1s]|[%(leveln
     loop.run_until_complete(ws.receive("factorio.zone/ws"))
     loop.run_forever()"""
 
-class Bot(discord.AutoShardedBot):
+class Bot(commands.AutoShardedBot):
     """Subclassing Bot because we do some different things here"""
 
     async def on_ready(self):
