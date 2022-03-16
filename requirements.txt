@@ -1,5 +1,5 @@
-discord.py<=1.7.3
-coloredlogs<=15.0.1
-discord-py-slash-commands<=4.1.0
-dinteractions_Paginator<=1.5.1
-websockets<=10.2
+discord.py>=1.7.3
+coloredlogs>=15.0.1
+discord-py-slash-commands>=3.0.3
+dinteractions_Paginator>=1.5.1
+websockets>=10.2
