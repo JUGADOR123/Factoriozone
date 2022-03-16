@@ -72,20 +72,15 @@ async def help(ctx: SlashContext):
     await Paginator(bot=bot, ctx=ctx, pages=pages, timeout=60).run()
 
 @slash.slash(
-    name="settings",
-    description="Sets some settings for your server",
+    name="setusertoken",
+    description="Sets the user token for your server",
     guild_ids=[926227211659386981],
     options=[
         create_option(
-            name="addusertoken",
-            description="Sets your server's factorio.zone user token",
-            option_type=1,
-            options=[
-                create_option(
-                        name="usertoken",
-                        description="Put your user token from factorio.zone here",
-                        required=True,
-                        option_type=3
+            name="usertoken",
+            description="Put your user token from factorio.zone here",
+        required=True,
+        option_type=3
                 )
             ],
         )
