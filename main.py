@@ -79,12 +79,12 @@ async def help(ctx: SlashContext):
         create_option(
             name="add",
             description="Sets some settings to your server",
-            type=2,
+            option_type=2,
             options=[
                 create_option(
                     name="usertoken",
-                    description="Sets your server's factoeio.zone user token",
-                    type=2,
+                    description="Sets your server's factorio.zone user token",
+                    option_type=2,
                     options=[
                         create_option(
                             name="usertoken",
