@@ -86,7 +86,7 @@ async def help(ctx: SlashContext):
         )
     ]
 )
-async def settings(ctx:SlashContext, sub_command:str, usertoken:str):
-    await ctx.send(sub_command)
+async def settings(ctx:SlashContext, usertoken:str):
+    await ctx.send(usertoken)
 
 bot.run(token)
