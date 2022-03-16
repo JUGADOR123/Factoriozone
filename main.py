@@ -77,12 +77,12 @@ async def help(ctx: SlashContext):
     guild_ids=[926227211659386981],
     options=[
         create_option(
-            name="usertoken",
+            name="addusertoken",
             description="Sets your server's factorio.zone user token",
             option_type=1,
             options=[
                 create_option(
-                        name="usertoken_option",
+                        name="usertoken",
                         description="Put your user token from factorio.zone here",
                         required=True,
                         option_type=3
