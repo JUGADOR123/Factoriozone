@@ -54,7 +54,7 @@ bot = Bot(command_prefix="/")
 bot.remove_command('help')
 slash = interactions.Client(token=token)
 
-@slash.command(
+"""@slash.command(
     name="help",
     description="Gets the commands for the bot",
     guild_ids=[926227211659386981]
@@ -67,7 +67,7 @@ async def help(ctx: SlashContext):
     five = discord.Embed(title="5th Embed", description="General Kenobi!", color=discord.Color.blue())
     pages = [login, start, stop, four, five]
 
-    await Paginator(bot=bot, ctx=ctx, pages=pages, timeout=60).run()
+    await Paginator(bot=bot, ctx=ctx, pages=pages, timeout=60).run()"""
 
 @slash.command(
     name="setusertoken",
