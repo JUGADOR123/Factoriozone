@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "fzdiscordbot"
+version = "0.1.0"
+description = ""
+authors = ["Jugador <momocordova@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+"discord.py" = {git = "https://github.com/Rapptz/discord.py.git"}
+coloredlogs = "^15.0.1"
+prettytable = "^3.2.0"
+python-dotenv = "^0.19.2"
+websockets = "^10.2"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
