@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 
+import discord.member
 import websockets
 
 logger = logging.getLogger(__name__)
@@ -9,7 +10,7 @@ url = "wss://factorio.zone/ws"
 
 
 class FzSocket:
-    def __init__(self, owner: str, token: str):
+    def __init__(self, owner: discord.member.Member, token: str):
         self.owner = owner
 
         self.connected = False
@@ -29,9 +30,9 @@ class FzSocket:
         if "secret" in message:
             self.visit_secret = message["secret"]
             self._event_received_secret.set()
-            logging.info("Visit secret: %s", self.visit_secret)
+            logger.info("Visit secret: %s", self.visit_secret)
         else:
-            logging.info(f"Message received: {message}")
+            logger.info(f"Message received: {message}")
 
     async def get_secret(self):
         await self._event_received_secret.wait()
