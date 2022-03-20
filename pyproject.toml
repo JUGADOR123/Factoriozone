@@ -11,6 +11,8 @@ coloredlogs = "^15.0.1"
 prettytable = "^3.2.0"
 python-dotenv = "^0.19.2"
 websockets = "^10.2"
+SQLAlchemy = "^1.4.32"
+aiosqlite = "^0.17.0"
 
 [tool.poetry.dev-dependencies]
 

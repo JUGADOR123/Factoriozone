@@ -12,12 +12,6 @@ def setup():
     logger = logging.getLogger()
     load_dotenv("token.env")
 
-    if not os.path.isfile("fztokens.json"):
-        with open("fztokens.json", "w") as f:
-            data = {"tokens": []}
-            json.dump(data, f, indent=4)
-        logger.error("Token file not found, creating one")
-
     if gettrace() is None:
         coloredlogs.install(level='INFO', logger=logger, fmt=f"[%(module)-1s]|[%(levelname)-1s]| %(message)s", )
 
