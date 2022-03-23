@@ -1,10 +1,10 @@
-import json
+import logging
+import os
+from sys import gettrace
 
 import coloredlogs
-import logging
 from dotenv import load_dotenv
-from sys import gettrace
-import os
+
 from src.Bot import FzBot
 
 
