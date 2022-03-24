@@ -24,6 +24,7 @@ class FzDiscordUser(Base):
 class FzToken(Base):
     __tablename__ = "fz_tokens"
     id = Column(Integer, primary_key=True)
+    name = Column(String, default="")
     token_id = Column('token_id', String)
     user_id = Column(Integer, ForeignKey("fz_discord_users.id"), back_populates="tokens")
     user = relationship("FzDiscordUser", back_populates="tokens", lazy="selectin")
@@ -38,33 +39,32 @@ async def start_db():
         await conn.commit()
 
 
-async def add_new_user(user: discord.Member, token):
+async def add_new_user(user: discord.Member, token, name: str):
     async with async_session() as session:
-        db_user = FzDiscordUser(id=user.id, tokens=[FzToken(token_id=token)])
+        db_user = FzDiscordUser(id=user.id, tokens=[FzToken(token_id=token, name=name)])
         session.add(db_user)
         await session.commit()
         await session.refresh(db_user)
-    logger.info(f"Added new user with id {user.id} and token {token}")
+    logger.info(f"Added new user with id {user.id} and token {token} and name {name}")
     return True
 
 
-async def append_token(user: discord.Member, token):
+async def append_token(user: discord.Member, token, name: str):
     async with async_session() as session:
         q = select(FzDiscordUser).where(FzDiscordUser.id == user.id)
-        db_user = await session.execute(q)
-        db_user = db_user.scalar()
+        db_user = await session.scalar(q)
         if db_user is not None:
             try:
-                db_user.tokens.append(FzToken(token_id=token))
+                db_user.tokens.append(FzToken(token_id=token, name=name))
                 await session.commit()
                 await session.refresh(db_user)
-                logger.info(f"Added token {token} to user {user.id}")
+                logger.info(f"Added token: {token} with name: {name} to user {user.id} ")
                 return True
             except IntegrityError:
                 logger.info(f"User {user.id} already has token {token}")
                 return False
         else:
-            return await add_new_user(user, token)
+            return await add_new_user(user, token, name)
 
 
 async def remove_token(user: discord.Member, token: str):
@@ -81,6 +81,16 @@ async def remove_token(user: discord.Member, token: str):
             return True
 
 
+async def get_tokens(user: discord.Member) -> list[FzToken]:
+    async with async_session() as session:
+        q = select(FzDiscordUser).where(FzDiscordUser.id == user.id)
+        db_user = await session.scalar(q)
+        if db_user is not None and len(db_user.tokens) > 0:
+            return db_user.tokens
+        else:
+            return []
+
+
 async def get_all_data():
     async with async_session() as session:
         q = select(FzDiscordUser)
@@ -88,5 +98,6 @@ async def get_all_data():
         users = users.scalars()
         unpacked_users = []
         for user in users:
-            unpacked_users.append({'id': user.id, 'tokens': [token.token_id for token in user.tokens]})
+            unpacked_users.append(
+                {'id': user.id, 'tokens': [{"id": token.token_id, "name": token.name} for token in user.tokens]})
         return unpacked_users
