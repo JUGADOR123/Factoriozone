@@ -2,6 +2,7 @@ import logging
 
 import discord
 from sqlalchemy import Column, Integer, String, ForeignKey, delete, UniqueConstraint
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
@@ -17,16 +18,17 @@ logger = logging.getLogger(__name__)
 class FzDiscordUser(Base):
     __tablename__ = "fz_discord_users"
     id = Column(Integer, primary_key=True)
-    tokens = relationship("FzToken", lazy="selectin")
+    tokens = relationship("FzToken", lazy="selectin", back_populates="user")
 
 
 class FzToken(Base):
     __tablename__ = "fz_tokens"
     id = Column(Integer, primary_key=True)
-    token_id = Column(String)
-    parent_id = Column(Integer, ForeignKey("fz_discord_users.id"))
+    token_id = Column('token_id', String)
+    user_id = Column(Integer, ForeignKey("fz_discord_users.id"), back_populates="tokens")
+    user = relationship("FzDiscordUser", back_populates="tokens", lazy="selectin")
     __table_args__ = (
-        UniqueConstraint('parent_id', 'token_id', name='_token_type_uc'),
+        UniqueConstraint('user_id', 'token_id', name='_token_type_uc'),
     )
 
 
@@ -52,11 +54,15 @@ async def append_token(user: discord.Member, token):
         db_user = await session.execute(q)
         db_user = db_user.scalar()
         if db_user is not None:
-            db_user.tokens.append(FzToken(token_id=token))
-            await session.commit()
-            await session.refresh(db_user)
-            logger.info(f"Added token {token} to user {user.id}")
-            return True
+            try:
+                db_user.tokens.append(FzToken(token_id=token))
+                await session.commit()
+                await session.refresh(db_user)
+                logger.info(f"Added token {token} to user {user.id}")
+                return True
+            except IntegrityError:
+                logger.info(f"User {user.id} already has token {token}")
+                return False
         else:
             return await add_new_user(user, token)
 
@@ -64,21 +70,15 @@ async def append_token(user: discord.Member, token):
 async def remove_token(user: discord.Member, token: str):
     # check how many tokens the user has
     async with async_session() as session:
-        db_user = await session.get(FzDiscordUser, id=user.id)
-        if db_user is not None and len(db_user.tokens) > 1:
-            await session.execute(delete(FzToken).where(FzToken.token_id == token, FzToken.parent_id == user.id))
-            await session.commit()
-            await session.refresh(db_user)
+        q = delete(FzToken).where(FzToken.token_id == token, FzToken.user_id == user.id)
+        result = await session.execute(q)
+        await session.commit()
+        if result.rowcount == 0:
+            logger.info(f"User {user.id} does not have token {token}")
+            return False
+        else:
             logger.info(f"Removed token {token} from user {user.id}")
             return True
-        elif db_user is not None and len(db_user.tokens) == 1:
-            await session.execute(delete(FzDiscordUser).where(FzDiscordUser.id == user.id))
-            await session.commit()
-            logger.info(f"Removed user {user.id} as they only had one token")
-            return True
-        else:
-            logger.info(f"User {user.id} does not exist")
-            return False
 
 
 async def get_all_data():
