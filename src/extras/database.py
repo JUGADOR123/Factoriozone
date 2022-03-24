@@ -26,7 +26,7 @@ class FzToken(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, default="")
     token_id = Column('token_id', String)
-    user_id = Column(Integer, ForeignKey("fz_discord_users.id"), back_populates="tokens")
+    user_id = Column(Integer, ForeignKey("fz_discord_users.id"))
     user = relationship("FzDiscordUser", back_populates="tokens", lazy="selectin")
     __table_args__ = (
         UniqueConstraint('user_id', 'token_id', name='_token_type_uc'),

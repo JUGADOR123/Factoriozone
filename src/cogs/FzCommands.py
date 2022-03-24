@@ -6,6 +6,7 @@ from discord import app_commands
 from discord.ext import commands
 
 from src.extras.database import remove_token, append_token, get_all_data, get_tokens, FzToken
+from src.extras.tokenSelector import TokenSelectorView
 
 
 class FzCommands(commands.Cog):
@@ -28,8 +29,14 @@ class FzCommands(commands.Cog):
     @app_commands.command(name="connect", description="Connect to Factorio Zone Servers")
     @app_commands.guilds(842947049489563700)
     async def _connect(self, ctx: discord.Interaction):
-        await ctx.response.defer()
+        await ctx.response.defer(ephemeral=True)
         # check if the user has any tokens
+        tokens = await get_tokens(ctx.user)
+        if not tokens:
+            await ctx.edit_original_message(content="You don't have any tokens, please user /add-token to add one")
+        else:
+            dropdown = TokenSelectorView(tokens)
+            await ctx.edit_original_message(content=f"Select a token to connect to:", view=dropdown)
 
     @app_commands.command(name="server-list", description="List all Factorio Zone Active servers")
     @app_commands.guilds(842947049489563700)
@@ -39,44 +46,44 @@ class FzCommands(commands.Cog):
     @app_commands.command(name="my-tokens", description="Get all your tokens from FactorioZone")
     @app_commands.guilds(842947049489563700)
     async def _my_tokens(self, ctx: discord.Interaction):
-        await ctx.response.defer()
+        await ctx.response.defer(ephemeral=True)
         tokens: list[FzToken] = await get_tokens(ctx.user)
         if tokens:
-            await ctx.followup.send(f"You currently have {len(tokens)} tokens")
             tokens_string = ""
             for token in tokens:
                 tokens_string += f"{token.name} - {token.token_id}\n"
-            await ctx.channel.send(f"```\n{tokens_string}```")
+            await ctx.edit_original_message(
+                content=f"You currently have {len(tokens)} Tokens: \n```json \n{tokens_string}```")
         else:
-            await ctx.followup.send("You don't have any tokens")
+            await ctx.edit_original_message(content="You don't have any tokens")
 
     @app_commands.command(name="add-token", description="Register a token for FactorioZone")
     @app_commands.guilds(842947049489563700)
     async def _add_token(self, ctx: discord.Interaction, token: str, name: str = None):
-        await ctx.response.defer()
+        await ctx.response.defer(ephemeral=True)
         status = await append_token(ctx.user, token, name)
         if status:
-            await ctx.followup.send("Successfully added token")
+            await ctx.edit_original_message(content="Successfully added token")
         else:
-            await ctx.followup.send("You already have that token")
+            await ctx.edit_original_message(content="You already have that token")
 
     @app_commands.command(name="remove-token", description="Remove a token from FactorioZone")
     @app_commands.guilds(842947049489563700)
     async def _remove(self, ctx: discord.Interaction, token: str):
-        await ctx.response.defer()
+        await ctx.response.defer(ephemeral=True)
         status = await remove_token(ctx.user, token)
         if status:
-            await ctx.followup.send("Successfully removed token")
+            await ctx.edit_original_message(content="Successfully removed token")
         else:
-            await ctx.followup.send("You don't have that token")
+            await ctx.edit_original_message(content="You don't have that token")
 
     @app_commands.command(name="get-all-data", description="Get all data from FactorioZone")
     @app_commands.guilds(842947049489563700)
     async def _get_all_data(self, ctx: discord.Interaction):
-        await ctx.response.defer()
+        await ctx.response.defer(ephemeral=True)
         data = await get_all_data()
         data = json.dumps(data, indent=4)
-        await ctx.followup.send(f"```\n{data}```")
+        await ctx.edit_original_message(content=f"```\n{data}```")
 
 
 async def setup(bot):
