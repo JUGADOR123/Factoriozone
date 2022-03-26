@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 import aiohttp
@@ -5,6 +6,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+from src.FzSocket import FzSocket
 from src.extras.database import remove_token, append_token, get_all_data, get_tokens, FzToken
 from src.extras.tokenSelector import TokenSelectorView
 
@@ -37,6 +39,18 @@ class FzCommands(commands.Cog):
         else:
             dropdown = TokenSelectorView(tokens)
             await ctx.edit_original_message(content=f"Select a token to connect to:", view=dropdown)
+            await dropdown.wait()
+            socket = FzSocket(ctx.user)
+            socket_task = asyncio.create_task(socket.connect())
+            print("this gets called")
+            respo = await self._fz_login(await socket.get_secret(), dropdown.token)
+            if respo is not None:
+                self.bot.active_sockets.append(socket)
+                regions = await socket.get_regions()
+                saves = await socket.get_saves()
+                versions = await socket.get_versions()
+                await ctx.followup.send(
+                    content=f" Regions: ```json\n{regions}```\nSaves: ```json\n{saves}```\nVersions: ```json\n{versions}```")
 
     @app_commands.command(name="server-list", description="List all Factorio Zone Active servers")
     @app_commands.guilds(842947049489563700)
@@ -53,7 +67,7 @@ class FzCommands(commands.Cog):
             for token in tokens:
                 tokens_string += f"{token.name} - {token.token_id}\n"
             await ctx.edit_original_message(
-                content=f"You currently have {len(tokens)} Tokens: \n```json \n{tokens_string}```")
+                content=f"You currently have {len(tokens)} Tokens: \n```json\n{tokens_string}```")
         else:
             await ctx.edit_original_message(content="You don't have any tokens")
 
@@ -83,7 +97,7 @@ class FzCommands(commands.Cog):
         await ctx.response.defer(ephemeral=True)
         data = await get_all_data()
         data = json.dumps(data, indent=4)
-        await ctx.edit_original_message(content=f"```\n{data}```")
+        await ctx.edit_original_message(content=f"```json\n{data}```")
 
 
 async def setup(bot):

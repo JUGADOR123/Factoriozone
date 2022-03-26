@@ -13,12 +13,12 @@ class FzSocket:
     def __init__(self, owner: discord.member.Member):
         self.owner = owner
 
-        self.connected = False
         self.logged_in = False
         self.visit_secret = None
         self.regions = None
         self.saves = None
         self.versions = None
+        self._connected_event = asyncio.Event()
         self._event_received_secret = asyncio.Event()
         self._event_received_regions = asyncio.Event()
         self._event_received_saves = asyncio.Event()
@@ -34,6 +34,7 @@ class FzSocket:
         if "secret" in message:
             self.visit_secret = message["secret"]
             self._event_received_secret.set()
+
         elif 'name' in message and message['name'] == 'regions':
             self.regions = message["options"]
             self._event_received_regions.set()
@@ -64,5 +65,5 @@ class FzSocket:
 
     async def connect(self):
         async with websockets.connect(url) as websocket:
-            self.connected = True
+            self._connected_event.set()
             await self._handle_messages(websocket)
