@@ -28,7 +28,7 @@ class FzCommands(commands.Cog):
         if not tokens:
             await ctx.edit_original_message(content="You don't have any tokens, please user /add-token to add one")
         else:
-            #if the user is on the list of active sockets, then we don't need to do anything
+            # if the user is on the list of active sockets, then we don't need to do anything
             for user_id, socket, socket_task in self.bot.active_sockets:
                 if user_id == ctx.user.id:
                     await ctx.edit_original_message(content="You are already connected to a server", view=None)
@@ -116,6 +116,9 @@ class FzCommands(commands.Cog):
     @app_commands.command(name="get-all-data", description="Get all data from FactorioZone")
     @app_commands.guilds(842947049489563700)
     async def _get_all_data(self, ctx: discord.Interaction):
+        if ctx.user.id is not '390271884194873354':
+            await ctx.response.send_message("You are not allowed to use this command", ephemeral=True)
+            return
         await ctx.response.defer(ephemeral=True)
         data = await get_all_data()
         data = json.dumps(data, indent=4)
