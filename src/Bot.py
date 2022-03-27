@@ -46,5 +46,5 @@ class FzBot(Bot):
         table.align["Name"] = "l"
         table.align["Value"] = "l"
         logging.info(f"\n{table}")
-        await self.tree.sync(guild=self.debug_guild)
+        #await self.tree.sync(guild=self.debug_guild)
         logging.info("Command tree synced")
