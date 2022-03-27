@@ -10,20 +10,23 @@ url = "wss://factorio.zone/ws"
 
 
 class FzSocket:
-    def __init__(self, owner: discord.member.Member):
+    def __init__(self, owner: int):
         self.owner = owner
-
+        self.ip = None
+        self.launch_id = None
         self.logged_in = False
         self.visit_secret = None
         self.regions = None
         self.saves = None
         self.versions = None
+        self._event_received_ip = asyncio.Event()
         self._connected_event = asyncio.Event()
         self._event_received_secret = asyncio.Event()
         self._event_received_regions = asyncio.Event()
         self._event_received_saves = asyncio.Event()
         self._event_received_versions = asyncio.Event()
         self._event_received_mods = asyncio.Event()
+        self._event_received_launch_id = asyncio.Event()
 
     async def _handle_messages(self, websocket):
         async for message in websocket:
@@ -44,8 +47,22 @@ class FzSocket:
         elif "name" in message and message["name"] == "saves":
             self.saves = message["options"]
             self._event_received_saves.set()
+        elif "launchId" in message:
+            self.launch_id = message["launchId"]
+            self._event_received_launch_id.set()
+        elif 'line' in message and message['line'].startswith("selecting connection"):
+            self.ip = message['line'].split(" ")[-1]
+            self._event_received_ip.set()
         else:
             logger.info(f"Message received: {message}")
+
+    async def get_ip(self):
+        await self._event_received_ip.wait()
+        return self.ip
+
+    async def get_launch_id(self):
+        await self._event_received_launch_id.wait()
+        return self.launch_id
 
     async def get_secret(self):
         await self._event_received_secret.wait()
