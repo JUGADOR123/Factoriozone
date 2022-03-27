@@ -1,11 +1,12 @@
 import asyncio
+import json
 
 import discord
 from discord import app_commands
 from discord.ext import commands
 
 from src.extras.FzSocket import FzSocket
-from src.extras.database import remove_token, append_token, get_tokens, FzToken
+from src.extras.database import remove_token, append_token, get_all_data, get_tokens, FzToken
 from src.extras.posts import fz_login_post, fz_start_post, fz_stop_post
 from src.extras.settingsSelector import SettingsSelectorView
 from src.extras.tokenSelector import TokenSelectorView
@@ -19,6 +20,7 @@ class FzCommands(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="connect", description="Connect to Factorio Zone Servers")
+    @app_commands.guilds(842947049489563700)
     async def _connect(self, ctx: discord.Interaction):
         await ctx.response.defer(ephemeral=True)
         # check if the user has any tokens
@@ -55,6 +57,7 @@ class FzCommands(commands.Cog):
                     self.bot.active_sockets.append((ctx.user.id, socket, socket_task))
 
     @app_commands.command(name="stop", description="Stop the FactorioZone server")
+    @app_commands.guilds(842947049489563700)
     async def _stop(self, ctx: discord.Interaction):
         await ctx.response.defer(ephemeral=True)
         for user_id, socket, socket_task in self.bot.active_sockets:
@@ -72,10 +75,12 @@ class FzCommands(commands.Cog):
                 await ctx.edit_original_message(content="You don't have a server running", view=None)
 
     @app_commands.command(name="server-list", description="List all Factorio Zone Active servers")
+    @app_commands.guilds(842947049489563700)
     async def _server_list(self, ctx: discord.Interaction):
         await ctx.response.send_message(f"There are {len(self.bot.active_sockets)} active servers")
 
     @app_commands.command(name="my-tokens", description="Get all your tokens from FactorioZone")
+    @app_commands.guilds(842947049489563700)
     async def _my_tokens(self, ctx: discord.Interaction):
         await ctx.response.defer(ephemeral=True)
         tokens: list[FzToken] = await get_tokens(ctx.user)
@@ -89,6 +94,7 @@ class FzCommands(commands.Cog):
             await ctx.edit_original_message(content="You don't have any tokens")
 
     @app_commands.command(name="add-token", description="Register a token for FactorioZone")
+    @app_commands.guilds(842947049489563700)
     async def _add_token(self, ctx: discord.Interaction, token: str, name: str = None):
         await ctx.response.defer(ephemeral=True)
         status = await append_token(ctx.user, token, name)
@@ -98,6 +104,7 @@ class FzCommands(commands.Cog):
             await ctx.edit_original_message(content="You already have that token")
 
     @app_commands.command(name="remove-token", description="Remove a token from FactorioZone")
+    @app_commands.guilds(842947049489563700)
     async def _remove(self, ctx: discord.Interaction, token: str):
         await ctx.response.defer(ephemeral=True)
         status = await remove_token(ctx.user, token)
@@ -105,6 +112,17 @@ class FzCommands(commands.Cog):
             await ctx.edit_original_message(content="Successfully removed token")
         else:
             await ctx.edit_original_message(content="You don't have that token")
+
+    @app_commands.command(name="get-all-data", description="Get all data from FactorioZone")
+    @app_commands.guilds(842947049489563700)
+    async def _get_all_data(self, ctx: discord.Interaction):
+        if ctx.user.id is not '390271884194873354':
+            await ctx.response.send_message("You are not allowed to use this command", ephemeral=True)
+            return
+        await ctx.response.defer(ephemeral=True)
+        data = await get_all_data()
+        data = json.dumps(data, indent=4)
+        await ctx.edit_original_message(content=f"```json\n{data}```")
 
 
 async def setup(bot):

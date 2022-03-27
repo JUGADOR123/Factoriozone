@@ -23,10 +23,16 @@ class FzBot(Bot):
     async def setup_hook(self) -> None:
         await start_db()
         logging.info("Database started")
-        for file in os.listdir("src/cogs/"):
-            if file.endswith(".py") and not file.startswith("__"):
-                await self.load_extension(f"src.cogs.{file[:-3]}")
-                logging.info(f"Cog loaded: {file[:-3]} ")
+        if gettrace():
+            for file in os.listdir("src/devCogs/"):
+                if file.endswith(".py") and not file.startswith("__"):
+                    await self.load_extension(f"src.cogs.{file[:-3]}")
+                    logging.info(f"Cog loaded: {file[:-3]} ")
+        else:
+            for file in os.listdir("src/cogs/"):
+                if file.endswith(".py") and not file.startswith("__"):
+                    await self.load_extension(f"src.cogs.{file[:-3]}")
+                    logging.info(f"Cog loaded: {file[:-3]} ")
 
     async def on_ready(self):
         logging.info("Bot is ready")
