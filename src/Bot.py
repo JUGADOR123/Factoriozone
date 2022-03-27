@@ -26,7 +26,7 @@ class FzBot(Bot):
         if gettrace():
             for file in os.listdir("src/devCogs/"):
                 if file.endswith(".py") and not file.startswith("__"):
-                    await self.load_extension(f"src.cogs.{file[:-3]}")
+                    await self.load_extension(f"src.devCogs.{file[:-3]}")
                     logging.info(f"Cog loaded: {file[:-3]} ")
         else:
             for file in os.listdir("src/cogs/"):
