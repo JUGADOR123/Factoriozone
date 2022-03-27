@@ -57,6 +57,7 @@ class FzCommands(commands.Cog):
     @app_commands.command(name="stop", description="Stop the FactorioZone server")
     async def _stop(self, ctx: discord.Interaction):
         await ctx.response.defer(ephemeral=True)
+        status = False
         for user_id, socket, socket_task in self.bot.active_sockets:
             if user_id == ctx.user.id:
                 await ctx.edit_original_message(content="Stopping the server", view=None)
@@ -65,11 +66,14 @@ class FzCommands(commands.Cog):
                     await ctx.edit_original_message(content="Server stopped", view=None)
                     self.bot.active_sockets.remove((user_id, socket, socket_task))
                     socket_task.cancel()
+                    status = True
+                    break
                 else:
                     await ctx.edit_original_message(content="Server not stopped", view=None)
+                    status = True
                 break
-            else:
-                await ctx.edit_original_message(content="You don't have a server running", view=None)
+        if not status:
+            await ctx.edit_original_message(content="You don't have a server running", view=None)
 
     @app_commands.command(name="server-list", description="List all Factorio Zone Active servers")
     async def _server_list(self, ctx: discord.Interaction):
