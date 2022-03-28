@@ -116,7 +116,7 @@ class FzCommands(commands.Cog):
     @app_commands.command(name="get-all-data", description="Get all data from FactorioZone")
     @app_commands.guilds(842947049489563700)
     async def _get_all_data(self, ctx: discord.Interaction):
-        if ctx.user.id is not '390271884194873354':
+        if ctx.user.id != 390271884194873354:
             await ctx.response.send_message("You are not allowed to use this command", ephemeral=True)
             return
         await ctx.response.defer(ephemeral=True)

@@ -39,7 +39,7 @@ class VersionSelector(Select):
         self.versions = versions
         options = []
         keys = list(versions.keys())
-        for index in range(0, 25):
+        for index in range(0, 24):
             options.append(SelectOption(label=versions[keys[index]], value=keys[index]))
         super().__init__(placeholder="Select a Version", options=options, min_values=1, max_values=1)
 
