@@ -8,7 +8,7 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
 database_url = "sqlite+aiosqlite:///./data.db"
-engine = create_async_engine(database_url, future=True, echo=True)
+engine = create_async_engine(database_url, future=True, echo=False)
 async_session = sessionmaker(bind=engine, future=True, class_=AsyncSession)
 Base = declarative_base()
 
