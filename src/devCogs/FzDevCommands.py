@@ -7,7 +7,7 @@ from discord.ext import commands
 
 from src.extras.FzSocket import FzSocket
 from src.extras.database import remove_token, append_token, get_all_data, get_tokens, FzToken
-from src.extras.posts import fz_login_post, fz_start_post, fz_stop_post
+from src.extras.posts import fz_login_post, fz_start_post, fz_stop_post, fz_command_post
 from src.extras.settingsSelector import SettingsSelectorView
 from src.extras.tokenSelector import TokenSelectorView
 
@@ -19,6 +19,22 @@ class FzCommands(commands.Cog):
         super().__init__()
         self.bot = bot
 
+    @app_commands.command(name="console", description="Send a command to factorio.zone console")
+    @app_commands.guilds(842947049489563700)
+    async def _console(self, ctx:discord.Interaction, command: str):
+        await ctx.response.defer(ephemeral=True)
+        for user_id, socket, socket_task in self.bot.active_sockets:
+            if user_id == ctx.user.id:
+                await ctx.edit_original_message(content="Sending console command: "+ command, view=None)
+                response = await fz_command_post(socket.visit_secret, socket.launch_id, command)
+                if response is not None:
+                    await ctx.edit_original_message(content="Console command successfully sent", view=None)
+                else:
+                    await ctx.edit_original_message(content="Console command not sent", view=None)
+                    status = True
+        if not status:
+            await ctx.edit_original_message(content="You don't have a server running", view=None)
+    
     @app_commands.command(name="connect", description="Connect to Factorio Zone Servers")
     @app_commands.guilds(842947049489563700)
     async def _connect(self, ctx: discord.Interaction):
