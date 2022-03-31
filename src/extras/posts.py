@@ -31,3 +31,12 @@ async def fz_stop_post(visit_secret: str, launch_id: str):
                 return await resp.json()
             else:
                 return None
+
+async def fz_command_post(visit_secret: str, launch_id: str, command:str):
+    async with aiohttp.ClientSession() as session:
+        async with session.post("https://factorio.zone/api/instance/console",
+                                data={"visitSecret": visit_secret, "launchId": f"{launch_id}", "input": command}) as resp:
+            if resp.status == 200:
+                return await resp.json()
+            else:
+                return None
