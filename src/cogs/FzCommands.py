@@ -6,7 +6,7 @@ from discord.ext import commands
 
 from src.extras.FzSocket import FzSocket
 from src.extras.database import remove_token, append_token, get_tokens, FzToken
-from src.extras.posts import fz_login_post, fz_start_post, fz_stop_post
+from src.extras.posts import fz_login_post, fz_start_post, fz_stop_post, fz_command_post
 from src.extras.settingsSelector import SettingsSelectorView
 from src.extras.tokenSelector import TokenSelectorView
 
@@ -18,6 +18,10 @@ class FzCommands(commands.Cog):
         super().__init__()
         self.bot = bot
 
+    @app_commands.command(name="console", description="Send a command to factorio.zone console")
+    async def _console(self, ctx:discord.Interaction, command: str):
+        
+    
     @app_commands.command(name="connect", description="Connect to Factorio Zone Servers")
     async def _connect(self, ctx: discord.Interaction):
         await ctx.response.defer(ephemeral=True)
